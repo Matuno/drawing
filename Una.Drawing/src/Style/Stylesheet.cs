@@ -60,13 +60,16 @@ public class Stylesheet
 
     internal class Rule(QuerySelector querySelector, int sourceOrderIndex)
     {
+        // Selectors are fixed after parsing; their associated styles remain mutable.
+        private readonly string _selectorText = querySelector.ToString();
+
         public readonly int SourceOrderIndex = sourceOrderIndex;
 
         public Specificity Specificity = Specificity.Calculate(querySelector.ToString());
 
         public override string ToString()
         {
-            return querySelector.ToString();
+            return _selectorText;
         }
 
         public bool Matches(Node node)

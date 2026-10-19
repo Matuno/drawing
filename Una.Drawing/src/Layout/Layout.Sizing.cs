@@ -175,27 +175,12 @@ internal static partial class Layout
         // Abort if there is nothing to grow.
         if (growableChildren.Count == 0) return;
 
-        // Calculate space used by non-growable items and gaps without LINQ.
-        var growableSet = new System.Collections.Generic.HashSet<Node>(growableChildren);
-        float nonGrowableSize = 0f;
-        int visibleChildCount = 0;
-        foreach (var n in children) {
-            if (n is { IsDisposed: false, ComputedStyle.IsVisible: true }) {
-                if (!growableSet.Contains(n)) {
-                    nonGrowableSize += getOuterSize(n);
-                }
-                if (n.ComputedStyle.Anchor != Anchor.AnchorPoint.None) visibleChildCount++;
-            }
-        }
-
-        if (growableChildren.Count == 0) return;
-
         // Calculate space used by non-growable items and gaps.
-        nonGrowableSize = children
+        float nonGrowableSize = children
                                .Where(n => !growableChildren.Contains(n) && n is { IsDisposed: false, ComputedStyle.IsVisible: true })
                                .Sum(n => getOuterSize(n));
 
-        visibleChildCount = children.Count(n => n is { IsDisposed: false, ComputedStyle.IsVisible: true } && n.ComputedStyle.Anchor != Anchor.AnchorPoint.None);
+        int visibleChildCount = children.Count(n => n is { IsDisposed: false, ComputedStyle.IsVisible: true } && n.ComputedStyle.Anchor != Anchor.AnchorPoint.None);
         float totalGapSize      = children.Count > 1 ? gap * (visibleChildCount - 1) : 0;
 
         // Total space the growable items should collectively occupy.
